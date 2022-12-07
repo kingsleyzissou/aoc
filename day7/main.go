@@ -62,22 +62,16 @@ func updateSize(size int, parent *fsNode) {
 	if parent == nil {
 		return
 	}
-	// for parent != nil {
-	// parent = parent.parent
 	*parent.size += size
 	updateSize(size, parent.parent)
-	// }
 }
 
-func cd(dir string, cwd *fsNode) *fsNode {
+func nextNode(dir string, cwd *fsNode) *fsNode {
 	if dir == "/" {
 		return newRoot()
 	}
 
 	if dir == ".." {
-		if cwd.parent != nil {
-
-		}
 		return cwd.parent
 	}
 
@@ -124,29 +118,6 @@ func fsEntryToNode(s string, cwd *fsNode) fsNode {
 	return entry
 }
 
-func ls(s []string, cwd *fsNode) *fsNode {
-	for _, line := range s {
-		if strings.HasPrefix(line, "$") || line == "" {
-			return cwd
-		}
-		entry := fsEntryToNode(line, cwd)
-		cwd.addNode(entry)
-	}
-	return cwd
-}
-
-func execute(s string, lines []string, index int, cwd fsNode) *fsNode {
-	cmd := strings.Split(s, " ")
-	if strings.HasPrefix(cmd[1], "ls") {
-		return ls(lines[index:], &cwd)
-	}
-	return cd(cmd[2], &cwd)
-}
-
-func isCommand(s string) bool {
-	return strings.HasPrefix(s, "$")
-}
-
 func readFile() []string {
 	file, err := ioutil.ReadFile("input.txt")
 	if err != nil {
@@ -182,18 +153,33 @@ func getSmallestEntryOverValue(root fsNode, threshold int) fsNode {
 	return entries[0]
 }
 
-func main() {
-	cwd := fsNode{}
-	lines := readFile()
-	for index, line := range lines {
-		if isCommand(line) {
-			res := execute(line, lines, index+1, cwd)
-			cwd = *res
+func parseInput(input []string) *fsNode {
+	cwd := &fsNode{}
+	for _, line := range input {
+		if line == "" {
+			break
+		}
+		args := strings.Split(line, " ")
+		if args[1] == "cd" {
+			cwd = nextNode(args[2], cwd)
+		} else if args[1] == "ls" {
+			continue
+		} else {
+			entry := fsEntryToNode(line, cwd)
+			cwd.addNode(entry)
 		}
 	}
+	return cwd
+}
+
+func main() {
+	// parse the input and build the
+	// fs tree
+	tree := parseInput(readFile())
 
 	// go back to the root
-	root := cwd.getRoot()
+	// so we can traverse the tree
+	root := tree.getRoot()
 
 	// part one
 	sum := getDirsUnderValue(root, 100000)
