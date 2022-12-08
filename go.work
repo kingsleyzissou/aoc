@@ -7,4 +7,5 @@ use (
   ./day4
   ./day6
   ./day7
+  ./day8
 )
