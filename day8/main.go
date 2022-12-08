@@ -151,16 +151,39 @@ func (f *forest) travel(curr *tree, direction string) {
 	curr.setViewingDistance(direction, distance)
 }
 
-func (f *forest) search(callback func(i, j int)) {
+func (f *forest) search(ch chan tree) {
 	for i := 0; i < len(f.trees); i++ {
 		for j := 0; j < len(f.trees[0]); j++ {
 			f.travel(&f.trees[i][j], "up")
 			f.travel(&f.trees[i][j], "down")
 			f.travel(&f.trees[i][j], "left")
 			f.travel(&f.trees[i][j], "right")
-			callback(i, j)
+			ch <- f.trees[i][j]
 		}
 	}
+	close(ch)
+}
+
+// 🚀🚀🚀
+func explore(forest *forest) {
+	ch := make(chan tree)
+	go forest.search(ch)
+
+	sum, score := 0, 0
+	for t := range ch {
+		// part one
+		if t.visible {
+			sum++
+		}
+		// part two
+		vs := t.viewingScore()
+		if vs > score {
+			score = vs
+		}
+	}
+
+	fmt.Println("Visible trees: ", sum)
+	fmt.Println("Max viewing score: ", score)
 }
 
 func readFile() []string {
@@ -175,20 +198,5 @@ func main() {
 	forest := &forest{}
 	contents := readFile()
 	buildForest(contents, forest)
-
-	sum, score := 0, 0
-	forest.search(func(i, j int) {
-		t := forest.trees[i][j]
-		// part one
-		if t.visible {
-			sum++
-		}
-		// part two
-		vs := t.viewingScore()
-		if vs > score {
-			score = vs
-		}
-	})
-	fmt.Println("Visible trees: ", sum)
-	fmt.Println("Max viewing score: ", score)
+	explore(forest)
 }
