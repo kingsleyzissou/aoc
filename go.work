@@ -1,6 +1,7 @@
 go 1.18
 
 use (
+  ./helpers
   ./day1
   ./day2
   ./day3
