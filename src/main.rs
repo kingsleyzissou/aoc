@@ -1,3 +1,6 @@
+mod day1;
+
 fn main() {
-    println!("Hello AOC");
+    let star1 = day1::star1();
+    println!("Star 1: {}", star1);
 }
