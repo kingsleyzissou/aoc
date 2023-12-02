@@ -2,3 +2,6 @@
 name = "aoc"
 version = "0.1.0"
 edition = "2021"
+
+[dependencies]
+pcre2 = "0.2.6"
