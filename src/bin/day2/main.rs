@@ -74,6 +74,20 @@ fn star1(input: Vec<String>) -> i32 {
         .sum::<i32>();
 }
 
+fn throw_multiplicator(game: &Game) -> i32 {
+    let red = game.throws.iter().map(|t| t.red).max().unwrap_or(0);
+    let green = game.throws.iter().map(|t| t.green).max().unwrap_or(0);
+    let blue = game.throws.iter().map(|t| t.blue).max().unwrap_or(0);
+    return red * green * blue;
+}
+
+fn star2(input: Vec<String>) -> i32 {
+    return parser(input)
+        .iter()
+        .map(|game| throw_multiplicator(game))
+        .sum::<i32>();
+}
+
 fn main() {
     let input = File::open("input/d2.txt").unwrap();
     let input = BufReader::new(input)
@@ -81,6 +95,7 @@ fn main() {
         .map(|l| l.unwrap())
         .collect::<Vec<String>>();
     println!("Star 1: {}", star1(input.clone()));
+    println!("Star 2: {}", star2(input));
 }
 
 #[cfg(test)]
@@ -103,4 +118,15 @@ mod tests {
         assert_eq!(star1(input), 8);
     }
 
+    #[test]
+    fn test_star2() {
+        let input = to_string_vec(vec![
+            "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green",
+            "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue",
+            "Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red",
+            "Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red",
+            "Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green",
+        ]);
+        assert_eq!(star2(input), 2286);
+    }
 }
