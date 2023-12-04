@@ -92,6 +92,19 @@ fn star1(input: Vec<String>) -> i32 {
         .sum::<i32>();
 }
 
+fn star2(input: Vec<String>) -> i32 {
+    let points = get_points(input.clone());
+    return get_components(input.clone(), points.clone())
+        .iter()
+        .map(|(point, values)| {
+            if values.len() == 2 && points[point] == '*' {
+                return values[0] * values[1];
+            }
+            return 0;
+        })
+        .sum::<i32>();
+}
+
 fn main() {
     let input = File::open("input/d3.txt").unwrap();
     let input = BufReader::new(input)
@@ -99,6 +112,7 @@ fn main() {
         .map(|l| l.unwrap())
         .collect::<Vec<String>>();
     println!("Star 1: {}", star1(input.clone()));
+    println!("Star 2: {}", star2(input.clone()));
 }
 
 #[cfg(test)]
@@ -124,5 +138,22 @@ mod tests {
             ".664.598..",
         ]);
         assert_eq!(star1(input), 4361);
+    }
+
+    #[test]
+    fn test_star2() {
+        let input = to_string_vec(vec![
+            "467..114..",
+            "...*......",
+            "..35..633.",
+            "......#...",
+            "617*......",
+            ".....+.58.",
+            "..592.....",
+            "......755.",
+            "...$.*....",
+            ".664.598..",
+        ]);
+        assert_eq!(star2(input), 467835);
     }
 }
