@@ -2,12 +2,22 @@ use pcre2::bytes::{Captures, Regex};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-pub fn load(input: String) -> Vec<String> {
+fn load(input: String) -> Vec<String> {
     let file = File::open(input).unwrap();
     return BufReader::new(file).lines().map(|l| l.unwrap()).collect();
 }
 
-pub fn star1(input: Vec<String>) -> u32 {
+fn main() {
+    let input = load("input/d1.txt".to_string());
+
+    let star1 = star1(input.clone());
+    println!("Star 1: {}", star1);
+
+    let star2 = star2(input.clone());
+    println!("Star 2: {}", star2);
+}
+
+fn star1(input: Vec<String>) -> u32 {
     return input
         .iter()
         .map(|line| {
@@ -37,7 +47,7 @@ fn parse_numbers(capture: Captures<'_>) -> u32 {
     };
 }
 
-pub fn star2(input: Vec<String>) -> u32 {
+fn star2(input: Vec<String>) -> u32 {
     let pattern = r"(?=(\d|one|two|three|four|five|six|seven|eight|nine))";
     let regex = Regex::new(pattern).unwrap();
 
@@ -58,15 +68,27 @@ pub fn star2(input: Vec<String>) -> u32 {
 mod tests {
     use super::*;
 
+    fn to_string_vec(input: Vec<&str>) -> Vec<String> {
+        return input.iter().map(|s| s.to_string()).collect();
+    }
+
     #[test]
     fn test_star1() {
-        let input = load("input/test_d1s1.txt".to_string());
+        let input = to_string_vec(vec!["1abc2", "pqr3stu8vwx", "a1b2c3d4e5f", "treb7uchet"]);
         assert_eq!(star1(input), 142);
     }
 
     #[test]
     fn test_star2() {
-        let input = load("input/test_d1s2.txt".to_string());
+        let input = to_string_vec(vec![
+            "two1nine",
+            "eightwothree",
+            "abcone2threexyz",
+            "xtwone3four",
+            "4nineeightseven2",
+            "zoneight234",
+            "7pqrstsixteen",
+        ]);
         assert_eq!(star2(input), 281);
     }
 }
